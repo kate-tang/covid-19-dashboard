@@ -50,9 +50,10 @@ body {
   font-family: 'Open Sans', sans-serif;
 }
 .block {
-  border: 1px solid $grey-1;
-  overflow: hidden;
+  position: relative;
   background: $grey-4;
   color: #FFF;
+  border: 1px solid $grey-1;
+  overflow: hidden;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <header class="block header">
     <img class="logo" src="../assets/image/star_of_life.png" alt="esclapius stick">
-    <h1 class="main-title">COVID-19 Dashboard</h1>
+    <h1 class="main-title">COVID-19 臺灣疫情地圖</h1>
   </header>
 </template>
 

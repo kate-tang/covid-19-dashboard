@@ -1,15 +1,29 @@
 <template>
   <section class="block last-updated">
+    <Loader :class="{ 'hide': showBlock }" />
     <h5 class="title">資料更新時間</h5>
-    <p class="time">2022/6/23 下午7:20</p>
+    <p class="time">{{ updatedTime }}</p>
   </section>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref, watch } from 'vue'
+import Loader from './Loader.vue'
+import store from '../store'
 
 export default defineComponent({
-  
+  components: { Loader },
+  setup(){
+    let showBlock = ref<boolean>(false)
+    let updatedTime = ref<string>('')
+    
+    watch(() => store.state.updatedTime, () => {
+      updatedTime.value = new Date(store.state.updatedTime).toLocaleString()
+      showBlock.value = true
+    })
+
+    return { showBlock, updatedTime }
+  }
 })
 </script>
 
