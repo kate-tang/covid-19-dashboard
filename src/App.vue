@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <Header />
-    <MainStat />
+    <DomesticStat />
     <WorldStat />
     <Map />
     <Graph />
@@ -12,14 +12,14 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import Header from './components/Header.vue'
-import MainStat from './components/MainStat.vue'
+import DomesticStat from './components/DomesticStat.vue'
 import WorldStat from './components/WorldStat.vue'
 import Map from './components/Map.vue'
 import Graph from './components/Graph.vue'
 import LastUpdated from './components/LastUpdated.vue'
 
 export default defineComponent({
-  components: { Header, MainStat, WorldStat, Map, Graph, LastUpdated },
+  components: { Header, DomesticStat, WorldStat, Map, Graph, LastUpdated },
   setup() {
     // 
   },
@@ -40,8 +40,8 @@ body {
   gap: $block-gap;
   grid-template-areas: 
     'header header header header header header header'
-    'lastupdated mainstat mainstat mainstat mainstat graph graph'
-    'worldstat mainstat mainstat mainstat mainstat graph graph'
+    'lastupdated domesticstat domesticstat domesticstat domesticstat graph graph'
+    'worldstat domesticstat domesticstat domesticstat domesticstat graph graph'
     'worldstat map map map map graph graph';
   height: calc(100% - ($block-gap * 2));
   max-height: calc(100% - ($block-gap * 2));

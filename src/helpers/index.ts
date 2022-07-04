@@ -5,10 +5,9 @@ const fetchData = async (path: string): Promise<any[]> => {
     return [undefined, data]
   } catch (err) {
     console.log(typeof err);
-    return [err]
+    return [err, undefined]
   }
 }
-// [undefined, any[]]|[Error]
 
 // 123.456 -> 123.46
 // '123.456' -> '123.46'

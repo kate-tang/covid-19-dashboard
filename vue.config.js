@@ -1,3 +1,6 @@
+const path = require('path')
+const webpack = require('webpack')
+
 const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
   transpileDependencies: true,
@@ -15,7 +18,11 @@ module.exports = defineConfig({
       '^/nchc': {
         target: 'https://covid-19.nchc.org.tw/api/',
         pathRewrite: { '^/nchc': '' }
-      }
+      },
+      '^/covid19': {
+        target: 'https://api.covid19api.com/',
+        pathRewrite: { '^/covid19': '' }
+      },
     }
   }
 })

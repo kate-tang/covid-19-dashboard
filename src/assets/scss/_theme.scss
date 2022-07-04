@@ -1,0 +1,11 @@
+$themes: (
+  'case': #E60000,
+  'death': #FFF,
+  'vax': #4CE600
+);
+
+@each $key, $value in $themes {
+  .color-#{ $key } {
+    color: $value;
+  }
+}
