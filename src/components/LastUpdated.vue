@@ -1,8 +1,10 @@
 <template>
-  <section class="block last-updated">
-    <Loader :class="{ 'hide': showBlock }" />
-    <h5 class="title">資料更新時間</h5>
-    <p class="time">{{ updatedTime }}</p>
+  <section class="block block-themed last-updated">
+    <Loader v-if="!showBlock" />
+    <div class="block-content" v-else>
+      <h5 class="title">資料更新時間</h5>
+      <p class="time">{{ updatedTime }}</p>
+    </div>
   </section>
 </template>
 
@@ -30,10 +32,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 .last-updated {
   grid-area: lastupdated;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
 }
 .title {
   margin: 0;

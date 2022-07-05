@@ -1,8 +1,8 @@
 <template>
   <section class="block graph">
-    <div class="image"></div>
-    <div class="image"></div>
-    <div class="image"></div>
+    <div class="image block block-themed"></div>
+    <div class="image block block-themed"></div>
+    <div class="image block block-themed"></div>
   </section>
 </template>
 

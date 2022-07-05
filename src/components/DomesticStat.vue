@@ -1,27 +1,35 @@
 <template>
   <section class="block domestic-stat">
-    <div class="box">
-      <Loader :class="{ 'hide': showBlock }" />
-      <h2 class="title">累計確診</h2>
-      <span class="figure color-case">{{ totalCase }}</span>
+    <div class="box block block-themed">
+      <Loader v-if="!showBlock" />
+      <div v-else class="block-content">
+        <h2 class="title">累計確診</h2>
+        <span class="figure color-case">{{ totalCase }}</span>
+      </div>
     </div>
-    <div class="box">
-      <Loader :class="{ 'hide': showBlock }" />
-      <h2 class="title">新增確診</h2>
-      <span class="figure color-case">{{ newCase }}</span>
+    <div class="box block block-themed">
+      <Loader v-if="!showBlock" />
+      <div v-else class="block-content">
+        <h2 class="title">新增確診</h2>
+        <span class="figure color-case">{{ newCase }}</span>
+      </div>
     </div>
-    <div class="box">
-      <Loader :class="{ 'hide': showBlock }" />
-      <h2 class="title">累計死亡</h2>
-      <span class="figure color-death">{{ totalDeath }}</span>
-      <span class="note">+{{ newDeath }}</span>
-      <span class="note">(死亡率: {{ deathRate }}%)</span>
+    <div class="box block block-themed">
+      <Loader v-if="!showBlock" />
+      <div v-else class="block-content">
+        <h2 class="title">累計死亡</h2>
+        <span class="figure color-death">{{ totalDeath }}</span>
+        <span class="note">+{{ newDeath }}</span>
+        <span class="note">(死亡率: {{ deathRate }}%)</span>
+      </div>
     </div>
-    <div class="box">
-      <Loader :class="{ 'hide': showBlock }" />
-      <h2 class="title">疫苗涵蓋率</h2>
-      <span class="figure color-vax">{{ vacRate }}%</span>
-      <span class="note">累計接種人次 {{ vacShot }}</span>
+    <div class="box block block-themed">
+      <Loader v-if="!showBlock" />
+      <div v-else class="block-content">
+        <h2 class="title">疫苗涵蓋率</h2>
+        <span class="figure color-vax">{{ vacRate }}%</span>
+        <span class="note">累計接種人次 {{ vacShot }}</span>
+      </div>
     </div>
   </section>
 </template>
@@ -49,7 +57,7 @@ export default defineComponent({
       const [error, rawData] = await fetchData('/nchc/covid19?CK=covid-19@nchc.org.tw&querydata=4001&limited=TWN')
       
       if (error) {
-        console.log('error!!', error, typeof error);
+        console.log('error!!', error);
         return
       }
 
@@ -91,7 +99,7 @@ export default defineComponent({
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: $block-gap;
-  background: $grey-3;
+  background: transparent;
   border: none;
 }
 .box {
@@ -99,10 +107,6 @@ export default defineComponent({
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  position: relative;
-  background: $grey-4;
-  border: 1px solid $grey-1;
-  overflow: hidden;
 }
 .title {
   margin: 0 0 0.3vw 0;

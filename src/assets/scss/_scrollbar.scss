@@ -4,8 +4,7 @@
   --scrollbar-track-bg: transparent;
   --scrollbar-thumb: transparent;
   &:hover {
-    --scrollbar-track-bg: #2B2B2B;
-    --scrollbar-thumb: #717171;
+    --scrollbar-thumb: rgb(16, 48, 95);
   }
 
   // for Blink- and WebKit-based browsers

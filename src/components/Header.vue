@@ -19,7 +19,8 @@ export default defineComponent({
   display: flex;
   align-items: center;
   padding: 0 20px;
-  background: #1E376D;
+  background: transparent;
+  border: none;
   font-weight: 300;
 }
 .logo {

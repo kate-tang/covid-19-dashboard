@@ -6,6 +6,7 @@
     <Map />
     <Graph />
     <LastUpdated />
+    <AnimatedCursor />
   </div>
 </template>
 
@@ -17,9 +18,10 @@ import WorldStat from './components/WorldStat.vue'
 import Map from './components/Map.vue'
 import Graph from './components/Graph.vue'
 import LastUpdated from './components/LastUpdated.vue'
+import AnimatedCursor from './components/AnimatedCursor.vue'
 
 export default defineComponent({
-  components: { Header, DomesticStat, WorldStat, Map, Graph, LastUpdated },
+  components: { Header, DomesticStat, WorldStat, Map, Graph, LastUpdated, AnimatedCursor },
   setup() {
     // 
   },
@@ -43,17 +45,11 @@ body {
     'lastupdated domesticstat domesticstat domesticstat domesticstat graph graph'
     'worldstat domesticstat domesticstat domesticstat domesticstat graph graph'
     'worldstat map map map map graph graph';
+  position: relative;
   height: calc(100% - ($block-gap * 2));
   max-height: calc(100% - ($block-gap * 2));
   padding: $block-gap;
-  background: $grey-3;
+  background-image: linear-gradient(#0D1118, #111821);
   font-family: 'Open Sans', sans-serif;
-}
-.block {
-  position: relative;
-  background: $grey-4;
-  color: #FFF;
-  border: 1px solid $grey-1;
-  overflow: hidden;
 }
 </style>

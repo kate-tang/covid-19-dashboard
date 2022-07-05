@@ -1,16 +1,14 @@
 <template>
-  <section class="block world-stat">
+  <section class="block block-themed world-stat">
     <div class="head">
       <h3 class="title">
-        全球疫情統計<br>(
-          <span class="color-case">確診數</span> |
-          <span class="color-death">死亡數</span>
-        )
+        全球疫情統計<br>
+        ( <span class="color-case">確診數</span> <span class="divider">|</span> <span class="color-death">死亡數</span> )
       </h3>
     </div>
     <div class="body scrollbar">
-      <Loader :class="{ 'hide': showBlock }" />
-      <ul class="stat-list" v-if="world && countries && countries.length > 0">
+      <Loader v-if="!showBlock" />
+      <ul class="stat-list" v-else-if="world && countries && countries.length > 0">
         <li class="stat-list-item">
           <div class="name">{{ world.name }}</div>
           <div class="val">
@@ -54,7 +52,7 @@ export default defineComponent({
       const [error, rawData] = await fetchData('/covid19/summary')
       
       if (error) {
-        console.log('error!!!', error, typeof error);
+        console.log('error!!', error);
         return
       }
 
@@ -62,11 +60,10 @@ export default defineComponent({
       
       world.value = {
         name: "全球",
-        totalCases: raw.Global.TotalConfirmed,
-        totalDeaths: raw.Global.TotalDeaths
+        totalCases: format(raw.Global.TotalConfirmed),
+        totalDeaths: format(raw.Global.TotalDeaths)
       }
       countries.value = processCountyData(raw.Countries)
-      console.log(countries.value);
 
       setTimeout(() => showBlock.value = true, 500)
     }
@@ -100,8 +97,11 @@ export default defineComponent({
   align-items: center;
   .title {
     font-size: 1vw;
-    line-height: 1.3;
+    line-height: 1.4;
     text-align: center;
+    .divider {
+      vertical-align: text-top;
+    }
   }
 }
 .body {
@@ -110,7 +110,7 @@ export default defineComponent({
   overflow-y: scroll;
 }
 .stat-list {
-  margin: 0;
+  margin: 0 0 0 10px;
   padding: 0;
   list-style-type: none;
   .stat-list-item {
