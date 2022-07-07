@@ -33,7 +33,7 @@ import { defineComponent, ref } from 'vue'
 import Loader from './Loader.vue'
 import getCountryName from '../helpers/countries'
 import { fetchData, format } from '../helpers'
-import { World, Country, Global } from '../interface/apiData'
+import { World, Country } from '../interface/apiData'
 
 export default defineComponent({
   components: { Loader },

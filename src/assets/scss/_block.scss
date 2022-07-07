@@ -6,11 +6,10 @@
 }
 .block-themed {
   background: $block-bg;
-  border: 1px solid transparent;
-  transition: all .3s;
+  border: 1px solid #173869;
+  transition: all .5s;
   &:hover {
     background: lighten($block-bg, 15%);
-    border: 1px solid #0F2547;
   }
 }
 .block-content {

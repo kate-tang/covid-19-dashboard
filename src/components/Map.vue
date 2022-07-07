@@ -1,10 +1,12 @@
 <template>
   <section class="block map">
-    <div class="info" v-if="activeCounty">
-      <div class="location">{{ activeCounty }}</div>
-      <div class="val">{{ data[activeCounty] }}</div>
-      <button class="close" @click="activeCounty = ''">X</button>
-    </div>
+    <transition name="slide">
+      <div class="info block block-themed" v-if="activeCounty">
+        <div class="location">{{ activeCounty }}</div>
+        <div class="val">累計確診：<span class="color-case">{{ data[activeCounty] }}</span></div>
+        <button class="close" @click="activeCounty = ''"></button>
+      </div>
+    </transition>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="-307 0 2055 2055" class="taiwan" @click.self="activeCounty = ''">
       <g id="box" fill="none" stroke="#CCC" stroke-width="5">
         <path d="M 100.5 760.9435 100.5 491.7643 349.2545 491.7643 349.2545 760.9435 100.5 760.9435 Z"/>
@@ -160,7 +162,6 @@ export default defineComponent({
           currentCounty = county['a03']
         }
       })
-      console.log(data.value);
     }
     getCountyData()
 
@@ -191,18 +192,61 @@ export default defineComponent({
   background: transparent;
   border: none;
 }
+
+.info {
+  position: absolute;
+  width: 200px;
+  padding: 10px;
+  .location {
+    line-height: 1.5;
+    font-size: 16px;
+  }
+  .val {
+    line-height: 1.5;
+    font-size: 14px;
+  }
+  .close {
+    all: unset;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    &::before, &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1px;
+      height: 100%;
+      background: #CCC;
+    }
+    &::before {
+      transform: translateX(8px) rotate(45deg);
+    }
+    &::after {
+      transform: translateX(8px) rotate(-45deg);
+    }
+  }
+}
+.slide-enter-from, .slide-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.slide-enter-active, .slide-leave-active {
+  transition: all .5s;
+}
+
 .taiwan {
   width: 57vw;
   .county {
     path {
+      position: relative;
       &:hover {
         fill: #D3CEDF;
       }
     }
   }
-}
-.info {
-  position: absolute;
-  border: 1px solid red;
 }
 </style>

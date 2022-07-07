@@ -13,7 +13,7 @@ export default defineComponent({
     let showAnime = ref<boolean>(false)
     let holdForAnime = ref<boolean>(false)
 
-    document.addEventListener('mousedown', (e: MouseEvent) => {
+    document.addEventListener('mousedown', () => {
       showAnime.value = true
       holdForAnime.value = true
     })

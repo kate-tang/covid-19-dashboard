@@ -16,7 +16,7 @@ import Header from './components/Header.vue'
 import DomesticStat from './components/DomesticStat.vue'
 import WorldStat from './components/WorldStat.vue'
 import Map from './components/Map.vue'
-import Graph from './components/Graph.vue'
+import Graph from './components/Graph/Graph.vue'
 import LastUpdated from './components/LastUpdated.vue'
 import AnimatedCursor from './components/AnimatedCursor.vue'
 
