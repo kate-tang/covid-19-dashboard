@@ -4,21 +4,15 @@ import graphData from '@/helpers/graphData'
 import { Doughnut } from 'vue-chartjs'
 import {
   Chart as ChartJS,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-  CategoryScale,
-  Plugin
+  Title, Tooltip, Legend, ArcElement, CategoryScale,
+  ChartData, ChartOptions, Plugin
 } from 'chart.js'
 
 ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale)
 
 export default defineComponent({
   name: 'DoughnutChart',
-  components: {
-    Doughnut
-  },
+  components: { Doughnut },
   props: {
     chartId: {
       type: String,
@@ -57,20 +51,18 @@ export default defineComponent({
     const data = graphData[field].map(x => x.value)
     const labels = graphData[field].map(x => x.label)
     
-    const chartData = {
+    const chartData: ChartData<'doughnut'> = {
       labels,
       datasets: [
         {
-          backgroundColor: ['#41B883', '#E46651', '#00D8FF', '#DD1B16'],
-          borderColor: ['#41B883', '#E46651', '#00D8FF', '#DD1B16'],
+          backgroundColor: ['#4D96FF', '#FF6B6B', '#FFD93D', '#6BCB77'],
+          borderColor: 'transparent',
           data,
-          cutout: '80%',
-          borderRadius: 0
         }
       ]
     }
 
-    const chartOptions = {
+    const chartOptions: ChartOptions<'doughnut'> = {
       responsive: true,
       maintainAspectRatio: false,
       layout: {
@@ -79,11 +71,17 @@ export default defineComponent({
       plugins: {
         legend: {
           display: false
+        },
+        tooltip: {
+          callbacks: {
+            label: (context) => `${context.parsed}%`
+          }
         }
-      }
+      },
+      cutout: '75%',
     }
 
-    const plugins: Plugin[] = [{
+    const plugins: Plugin<'doughnut'>[] = [{
       id: 'doughnutLabelsLine',
       afterDraw(chart, args, options){
         const { ctx, chartArea: { top, left, width, height } } = chart
