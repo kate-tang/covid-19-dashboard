@@ -7,7 +7,8 @@
         <button class="close" @click="activeCounty = ''"></button>
       </div>
     </transition>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-307 0 2055 2055" class="taiwan" @click.self="activeCounty = ''">
+    <svg xmlns="http://www.w3.org/2000/svg" :width="svg_width" :height="svg_height" :viewBox="`${viewBox_x} ${viewBox_y} ${viewBox_width} ${viewBox_height}`" class="taiwan" id="taiwan" @click.self="activeCounty = ''"
+    @mousedown="beforeDrag" @mousemove="isDragging" @mouseup="afterDrag" @mouseout="afterDrag" @touchstart="beforeDrag" @touchmove="isDragging" @touchend="afterDrag" @wheel="zoom">
       <g id="box" fill="none" stroke="#CCC" stroke-width="5">
         <path d="M 100.5 760.9435 100.5 491.7643 349.2545 491.7643 349.2545 760.9435 100.5 760.9435 Z"/>
         <path d="M 300.6267 424.653 300.6267 114.206 673.2419 114.206 673.2419 424.653 300.6267 424.653 Z"/>
@@ -139,6 +140,13 @@ export default defineComponent({
 
     let data = ref<Record<string, string>>({})
 
+    let svg_width = ref<string>('100%')
+    let svg_height = ref<string>('100%')
+    let viewBox_x = ref<number>(0)
+    let viewBox_y = ref<number>(0)
+    let viewBox_width = ref<number>(1440)
+    let viewBox_height = ref<number>(2055)
+
     const getCountyData = async (): Promise<void> => {
       const [error, rawData] = await fetchData('/nchc/covid19?CK=covid-19@nchc.org.tw&querydata=5002')
       
@@ -165,6 +173,110 @@ export default defineComponent({
     }
     getCountyData()
 
+    // map dragging
+    let moving: boolean
+    let previousTouch: Touch
+    function beforeDrag(e: MouseEvent | TouchEvent): void {
+      if (e instanceof TouchEvent){
+        previousTouch = e.touches[0]
+      }
+      
+      moving = true
+    }
+    function isDragging(e: MouseEvent | TouchEvent): void {
+      if (!moving) return
+
+      // get viewBox
+      const el = e.target as SVGSVGElement
+      let startViewBox: number[] = el.getAttribute('viewBox')!.split(' ').map( n => parseFloat(n))
+
+      // convert start client point to svg point
+      let startClientPoint = el.createSVGPoint()
+      let CTM = el.getScreenCTM()
+      if (e instanceof MouseEvent){
+        startClientPoint.x = e.clientX
+        startClientPoint.y = e.clientY
+      } else {
+        startClientPoint.x = e.touches[0].clientX
+        startClientPoint.y = e.touches[0].clientY
+      }
+      let startSVGPoint = startClientPoint.matrixTransform(CTM?.inverse())
+
+      // convert target client point to svg point
+      let targetClientPoint = el.createSVGPoint()
+      CTM = el.getScreenCTM()
+      if (e instanceof MouseEvent){
+        targetClientPoint.x = e.clientX + e.movementX
+        targetClientPoint.y = e.clientY + e.movementY
+      } else {
+        targetClientPoint.x = e.touches[0].clientX + (e.touches[0].clientX - previousTouch.clientX)
+        targetClientPoint.y = e.touches[0].clientY + (e.touches[0].clientY - previousTouch.clientY)
+      }
+      let targetSVGPoint = targetClientPoint.matrixTransform(CTM?.inverse())
+      
+      // calculate offset
+      let delta = {
+        dx: startSVGPoint.x - targetSVGPoint.x,
+        dy: startSVGPoint.y - targetSVGPoint.y
+      }
+
+      // reset viewBox
+      let targetViewBox = `${startViewBox[0] + delta.dx} ${startViewBox[1] + delta.dy} ${startViewBox[2]} ${startViewBox[3]}`
+      el.setAttribute('viewBox', targetViewBox)
+
+      if (e instanceof TouchEvent){
+        previousTouch = e.touches[0]
+      }
+    }
+    function afterDrag(): void {
+      moving = false
+    }
+    
+    // map zooming
+    function zoom(e: WheelEvent){
+      // get viewBox
+      const el = e.target as SVGSVGElement
+      let startViewBox: number[] = el.getAttribute('viewBox')!.split(' ').map( n => parseFloat(n))
+
+      // cancel zooming when zoom in/out too much
+      if (startViewBox[2] > 2500 && e.deltaY > 0) return
+
+      // convert start client point to svg point
+      let startClientPoint = el.createSVGPoint()
+      let CTM = el.getScreenCTM()
+      startClientPoint.x = e.clientX
+      startClientPoint.y = e.clientY
+      let startSVGPoint = startClientPoint.matrixTransform(CTM?.inverse())
+
+      // set zoom ratio
+      let r 
+      if (e.deltaY > 0) {
+        r = 1.1
+      } else if (e.deltaY < 0) {
+        r = 0.9
+      } else {
+        r = 1
+      }
+
+      // apply zoom ratio
+      el.setAttribute('viewBox', `${startViewBox[0]} ${startViewBox[1]} ${startViewBox[2] * r} ${startViewBox[3] * r}`)
+
+      // convert start client point to svg point with new CTM
+      CTM = el.getScreenCTM()
+      let moveToSVGPoint = startClientPoint.matrixTransform(CTM?.inverse())
+
+      // calculate offset
+      let delta = {
+        dx: startSVGPoint.x - moveToSVGPoint.x,
+        dy: startSVGPoint.y - moveToSVGPoint.y
+      }
+
+      // reset viewBox
+      let middleViewBox = el.getAttribute('viewBox')!.split(' ').map( n => parseFloat(n))
+      let moveBackViewBox = `${middleViewBox[0] + delta.dx} ${middleViewBox[1] + delta.dy} ${middleViewBox[2]} ${middleViewBox[3]}` 
+      el.setAttribute('viewBox', moveBackViewBox)
+    }
+
     onMounted(() => {
       const counties = document.querySelectorAll<SVGPathElement>('path[data-county]')
       counties.forEach(county => {
@@ -180,7 +292,11 @@ export default defineComponent({
       }
     })
 
-    return { data, activeCounty }
+    return {
+      data, activeCounty,
+      svg_width, svg_height, viewBox_x, viewBox_y, viewBox_width, viewBox_height,
+      beforeDrag, isDragging, afterDrag, zoom
+    }
   }
 })
 </script>
@@ -239,7 +355,6 @@ export default defineComponent({
 }
 
 .taiwan {
-  width: 57vw;
   .county {
     path {
       position: relative;
