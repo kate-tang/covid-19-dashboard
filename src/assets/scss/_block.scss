@@ -3,6 +3,7 @@
   background: transparent;
   color: #FFF;
   overflow: hidden;
+  box-sizing: border-box;
 }
 .block-themed {
   background: $block-bg;

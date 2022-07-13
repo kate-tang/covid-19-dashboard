@@ -51,5 +51,15 @@ body {
   padding: $block-gap;
   background-image: linear-gradient(#0D1118, #111821);
   font-family: 'Open Sans', sans-serif;
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: $header-height 1fr 1fr 2fr 5fr;
+    grid-template-areas: 
+      'header header header'
+      'domesticstat domesticstat lastupdated'
+      'domesticstat domesticstat graph'
+      'map map graph'
+      'map map worldstat';
+  }
 }
 </style>

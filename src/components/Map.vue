@@ -187,7 +187,7 @@ export default defineComponent({
       if (!moving) return
 
       // get viewBox
-      const el = e.target as SVGSVGElement
+      const el = e.currentTarget as SVGSVGElement
       let startViewBox: number[] = el.getAttribute('viewBox')!.split(' ').map( n => parseFloat(n))
 
       // convert start client point to svg point
@@ -231,11 +231,12 @@ export default defineComponent({
     function afterDrag(): void {
       moving = false
     }
-    
+
     // map zooming
     function zoom(e: WheelEvent){
       // get viewBox
-      const el = e.target as SVGSVGElement
+      const el = e.currentTarget as SVGSVGElement
+      
       let startViewBox: number[] = el.getAttribute('viewBox')!.split(' ').map( n => parseFloat(n))
 
       // cancel zooming when zoom in/out too much

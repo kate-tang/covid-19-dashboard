@@ -1,6 +1,6 @@
 <template>
   <section class="block graph">
-    <div class="block block-themed graph-item">
+    <div class="block block-themed graph-item" :class="{ 'hide': mobileCurrentGraph && mobileCurrentGraph !== 'trend' }">
       <Loader v-if="!showGraph.trend" />
       <div class="block-content" :style="{ opacity: showGraph.trend ? 1 : 0 }">
         <h4 class="title">確診案例趨勢</h4>
@@ -11,7 +11,7 @@
         <Line :type="trendType" :data="trendData" :width="width" :height="height" :key="trendKey" />
       </div>
     </div>
-    <div class="block block-themed graph-item">
+    <div class="block block-themed graph-item" :class="{ 'hide': mobileCurrentGraph && mobileCurrentGraph !== 'age' }">
       <Loader v-if="!showGraph.age" />
       <div class="block-content" :style="{ opacity: showGraph.age ? 1 : 0 }">
         <h4 class="title">個案年齡分佈</h4>
@@ -22,7 +22,7 @@
         <Doughnut topic="age" :type="ageType" :height="height" :key="ageKey" @graph-ready="show('age')" />
       </div>
     </div>
-    <div class="block block-themed graph-item">
+    <div class="block block-themed graph-item" :class="{ 'hide': mobileCurrentGraph && mobileCurrentGraph !== 'gender' }">
       <Loader v-if="!showGraph.gender" />
       <div class="block-content" :style="{ opacity: showGraph.gender ? 1 : 0 }">
         <h4 class="title">個案性別分佈</h4>
@@ -32,6 +32,11 @@
         </div>
         <Doughnut topic="gender" :type="genderType" :height="height" :key="genderKey" @graph-ready="show('gender')" />
       </div>
+    </div>
+    <div class="mobile-toggle">
+      <button class="toggle-btn" :class="{ 'active': mobileCurrentGraph === 'trend' }" @click="mobileCurrentGraph = 'trend'" type="button">確診案例趨勢</button>
+      <button class="toggle-btn" :class="{ 'active': mobileCurrentGraph === 'age' }" @click="mobileCurrentGraph = 'age'" type="button">個案年齡分佈</button>
+      <button class="toggle-btn" :class="{ 'active': mobileCurrentGraph === 'gender' }" @click="mobileCurrentGraph = 'gender'" type="button">個案性別分佈</button>
     </div>
   </section>
 </template>
@@ -49,6 +54,7 @@ export default defineComponent({
   setup(){
     type CaseOrDeath = 'case' | 'death'
     type NewOrTotal = 'new' | 'total'
+    type Graph = 'trend' | 'age' | 'gender'
     let width = ref<number>(window.innerWidth / 4)
     let height = ref<number>(window.innerHeight / 5)
 
@@ -107,7 +113,7 @@ export default defineComponent({
     }
 
     // hide loader when graph is ready
-    let showGraph = ref({
+    let showGraph = ref<Record<Graph, boolean>>({
       trend: false,
       age: false,
       gender: false,
@@ -116,12 +122,26 @@ export default defineComponent({
       setTimeout(() => showGraph.value[topic] = true, 500)
     }
 
+    // set default graph for mobile device
+    let mobileCurrentGraph = ref<Graph | null>(initiateGraph())
+    function initiateGraph(){
+      if (window.innerWidth > 1200) {
+        return null
+      } else {
+        return 'trend'
+      }
+    }
+    window.addEventListener('resize', () => {
+      mobileCurrentGraph.value = initiateGraph()
+    })
+
     return {
       width, height,
       showGraph, show,
       trendData, trendType, trendKey, switchTrendType,
       ageType, ageKey, switchAgeType,
       genderType, genderKey, switchGenderType,
+      mobileCurrentGraph,
     }
   }
 })
@@ -130,12 +150,28 @@ export default defineComponent({
 <style lang="scss" scoped>
 .graph {
   grid-area: graph;
+  position: relative;
 }
 .graph-item {
   width: 100%;
   height: 33%;
   & + & {
     margin-top: 10px;
+  }
+  &.hide {
+    opacity: 0;
+    visibility: hidden;
+  }
+  @media (max-width: 1200px) {
+    position: absolute;
+    top: 0;
+    bottom: 25px;
+    left: 0;
+    right: 0;
+    height: auto;
+    & + & {
+      margin-top: 0;
+    }
   }
 }
 .title {
@@ -167,6 +203,40 @@ export default defineComponent({
       background: #FFF;
       color: #000;
     }
+  }
+}
+
+.mobile-toggle {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 26px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  @media (max-width: 1200px) {
+    display: flex;
+  }
+}
+.toggle-btn {
+  all: unset;
+  padding: 0px 8px;
+  background: transparent;
+  color: rgba(255,255,255,.3);
+  border-left: 1px solid #173869;
+  border-right: 1px solid #173869;
+  border-bottom: 1px solid #173869;
+  font-size: 14px;
+  cursor: pointer;
+  & + & {
+    margin-left: 5px;
+  }
+  &.active {
+    background: lighten($block-bg, 15%);
+    color: #FFF;
+    border-top: 1px solid #0E1928;
   }
 }
 </style>
