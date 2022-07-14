@@ -4,10 +4,11 @@
   color: #FFF;
   overflow: hidden;
   box-sizing: border-box;
+  user-select: none;
 }
 .block-themed {
   background: $block-bg;
-  border: 1px solid #173869;
+  border: 1px solid $border-color;
   transition: all .5s;
   &:hover {
     background: lighten($block-bg, 15%);

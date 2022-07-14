@@ -1,5 +1,5 @@
 <template>
-  <section class="block graph">
+  <section class="block">
     <div class="block block-themed graph-item" :class="{ 'hide': mobileCurrentGraph && mobileCurrentGraph !== 'trend' }">
       <Loader v-if="!showGraph.trend" />
       <div class="block-content" :style="{ opacity: showGraph.trend ? 1 : 0 }">
@@ -55,8 +55,48 @@ export default defineComponent({
     type CaseOrDeath = 'case' | 'death'
     type NewOrTotal = 'new' | 'total'
     type Graph = 'trend' | 'age' | 'gender'
-    let width = ref<number>(window.innerWidth / 4)
-    let height = ref<number>(window.innerHeight / 5)
+
+    // set graph width & height
+    let width = ref<number>()
+    let height = ref<number>()
+    function setGraphSize(){
+      if (window.innerWidth > 850){
+        width.value = window.innerWidth / 4
+        height.value = window.innerHeight / 5
+      } else if (window.innerWidth > 650) {
+        width.value = window.innerWidth * .7
+        height.value = window.innerHeight * .5
+      } else {
+        width.value = window.innerWidth * .8
+        height.value = window.innerHeight * .4
+      }
+    }
+    setGraphSize()
+
+    // set default graph for mobile device (because mobile is not wide enough to show all graphs)
+    let mobileCurrentGraph = ref<Graph | null>(window.innerWidth > 1200 ? null : 'trend')
+    
+    let prevWidth: number = window.innerWidth
+    window.addEventListener('resize', () => {
+      // when resize, check if it's nessary to reset mobileCurrentGraph
+      // if resize to <1200, then set to trend
+      if (prevWidth > 1200 && window.innerWidth <= 1200){
+        mobileCurrentGraph.value = 'trend'
+      }
+      // if resize to >1200, then set to null
+      if (prevWidth <= 1200 && window.innerWidth > 1200){
+        mobileCurrentGraph.value = null
+      }
+      prevWidth = window.innerWidth
+      
+      // reset graph width & height
+      // ignore for cellphone, because URL bar can be toggle when swiping up and down in cellphone, which lead to window resize, causing unnecessary graph refresh
+      if (window.innerWidth <= 500) return
+      setGraphSize()
+      trendKey.value++
+      ageKey.value++
+      genderKey.value++
+    })
 
     // trend graph
     let trendData = ref()
@@ -122,19 +162,6 @@ export default defineComponent({
       setTimeout(() => showGraph.value[topic] = true, 500)
     }
 
-    // set default graph for mobile device
-    let mobileCurrentGraph = ref<Graph | null>(initiateGraph())
-    function initiateGraph(){
-      if (window.innerWidth > 1200) {
-        return null
-      } else {
-        return 'trend'
-      }
-    }
-    window.addEventListener('resize', () => {
-      mobileCurrentGraph.value = initiateGraph()
-    })
-
     return {
       width, height,
       showGraph, show,
@@ -148,10 +175,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.graph {
-  grid-area: graph;
-  position: relative;
-}
 .graph-item {
   width: 100%;
   height: 33%;
@@ -173,10 +196,25 @@ export default defineComponent({
       margin-top: 0;
     }
   }
+  @media (max-width: 850px) {
+    top: 28px;
+    bottom: 0;
+  }
 }
 .title {
   margin: 0 0 6px 0;
   line-height: 1.3;
+  font-size: 16px;
+  @media (max-width: 850px) {
+    margin: 0 0 10px 0;
+    font-size: 26px;
+  }
+  @media (max-width: 650px) {
+    font-size: 24px;
+  }
+  @media (max-width: 500px) {
+    font-size: 20px;
+  }
 }
 .switch {
   display: flex;
@@ -188,7 +226,7 @@ export default defineComponent({
     border-top: 1px solid #FFF;
     border-left: 1px solid #FFF;
     border-bottom: 1px solid #FFF;
-    font-size: 1px;
+    font-size: 12px;
     cursor: pointer;
     &:first-child {
       padding-left: 12px;
@@ -202,6 +240,14 @@ export default defineComponent({
     &.active, &:hover {
       background: #FFF;
       color: #000;
+    }
+    @media (max-width: 850px) {
+      margin: 0 0 20px 0;
+      font-size: 14px;
+    }
+    @media (max-width: 650px) {
+      margin: 0 0 15px 0;
+      font-size: 12px;
     }
   }
 }
@@ -219,16 +265,24 @@ export default defineComponent({
   @media (max-width: 1200px) {
     display: flex;
   }
+  @media (max-width: 1000px) {
+    padding: 0 0 0 10px;
+  }
+  @media (max-width: 850px) {
+    top: 0;
+    bottom: auto;
+    height: 29px;
+  }
 }
 .toggle-btn {
   all: unset;
   padding: 0px 8px;
   background: transparent;
   color: rgba(255,255,255,.3);
-  border-left: 1px solid #173869;
-  border-right: 1px solid #173869;
-  border-bottom: 1px solid #173869;
-  font-size: 14px;
+  border-left: 1px solid $border-color;
+  border-right: 1px solid $border-color;
+  border-bottom: 1px solid $border-color;
+  font-size: 12px;
   cursor: pointer;
   & + & {
     margin-left: 5px;
@@ -237,6 +291,31 @@ export default defineComponent({
     background: lighten($block-bg, 15%);
     color: #FFF;
     border-top: 1px solid #0E1928;
+  }
+  @media (max-width: 1000px) {
+    padding: 0 5px;
+    & + & {
+      margin-left: 0;
+    }
+  }
+  @media (max-width: 850px) {
+    padding: 0px 8px;
+    border-top: 1px solid $border-color;
+    border-bottom: 1px solid transparent;
+    font-size: 14px;
+    & + & {
+      margin-left: 5px;
+    }
+    &.active {
+      border-top: 1px solid $border-color;
+      border-bottom: 1px solid #0E1928;
+    }
+  }
+  @media (max-width: 500px) {
+    font-size: 12px;
+    & + & {
+      margin-left: 0;
+    }
   }
 }
 </style>

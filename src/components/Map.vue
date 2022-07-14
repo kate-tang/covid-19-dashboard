@@ -1,5 +1,5 @@
 <template>
-  <section class="block map">
+  <section class="block">
     <transition name="slide">
       <div class="info block block-themed" v-if="activeCounty">
         <div class="location">{{ activeCounty }}</div>
@@ -303,13 +303,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.map {
-  grid-area: map;
-  position: relative;
-  background: transparent;
-  border: none;
-}
-
 .info {
   position: absolute;
   width: 200px;

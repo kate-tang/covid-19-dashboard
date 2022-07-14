@@ -1,5 +1,5 @@
 <template>
-  <section class="block domestic-stat">
+  <section class="block">
     <div class="box block block-themed">
       <Loader v-if="!showBlock" />
       <div v-else class="block-content">
@@ -94,31 +94,83 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.domestic-stat {
-  grid-area: domesticstat;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: $block-gap;
-  background: transparent;
-  border: none;
-}
 .box {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  @media (max-width: 850px) {
+    width: 100%;
+    max-width: 90%;
+    height: 100%;
+    max-height: 65%;
+    &:nth-child(1) { justify-self: end; align-self: end; }
+    &:nth-child(2) { justify-self: start; align-self: end; }
+    &:nth-child(3) { justify-self: end; align-self: start; }
+    &:nth-child(4) { justify-self: start; align-self: start; }
+  }
+  @media (max-width: 650px) {
+    max-width: 100%;
+    max-height: 100%;
+    &:nth-child(1) { justify-self: stretch; align-self: stretch; }
+    &:nth-child(2) { justify-self: stretch; align-self: stretch; }
+    &:nth-child(3) { justify-self: stretch; align-self: stretch; }
+    &:nth-child(4) { justify-self: stretch; align-self: stretch; }
+  }
 }
 .title {
-  margin: 0 0 0.3vw 0;
+  margin: 0;
   font-size: 1.2vw;
+  @media (max-width: 1200px) {
+    font-size: 16px;
+  }
+  @media (max-width: 850px) {
+    font-size: 2.7vw;
+  }
+  @media (max-width: 650px) {
+    font-size: 3.3vw;
+  }
+  @media (max-width: 500px) {
+    font-size: 4vw;
+  }
 }
 .figure {
-  margin: 0 0 0.2vw 0;
+  margin: 0.3vw 0 0 0;
   font-size: 2.3vw;
   white-space: nowrap;
+  @media (max-width: 1200px) {
+    margin: 4px 0 0 0;
+    font-size: 28px;
+  }
+  @media (max-width: 850px) {
+    margin: 0.5vw 0 0 0;
+    font-size: 7vw;
+  }
+  @media (max-width: 650px) {
+    font-size: 8.5vw;
+  }
+  @media (max-width: 500px) {
+    font-size: 9vw;
+  }
 }
 .note {
+  margin: 0.2vw 0 0 0;
   font-size: 1vw;
   line-height: 1.2;
+  text-align: center;
+  @media (max-width: 1200px) {
+    margin: 4px 0 0 0;
+    font-size: 12px;
+  }
+  @media (max-width: 850px) {
+    margin: 0.4vw 0 0 0;
+    font-size: 2vw;
+  }
+  @media (max-width: 650px) {
+    font-size: 2.5vw;
+  }
+  @media (max-width: 500px) {
+    font-size: 3vw;
+  }
 }
 </style>

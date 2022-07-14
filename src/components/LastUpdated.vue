@@ -1,5 +1,5 @@
 <template>
-  <section class="block block-themed last-updated">
+  <section class="block block-themed">
     <Loader v-if="!showBlock" />
     <div class="block-content" v-else>
       <h5 class="title">資料更新時間</h5>
@@ -30,9 +30,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.last-updated {
-  grid-area: lastupdated;
-}
 .title {
   margin: 0;
   margin-bottom: 5px;

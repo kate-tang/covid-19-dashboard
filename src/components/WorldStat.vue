@@ -1,5 +1,5 @@
 <template>
-  <section class="block block-themed world-stat">
+  <section class="block block-themed">
     <div class="head">
       <h3 class="title">
         全球疫情統計<br>
@@ -85,12 +85,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.world-stat {
-  grid-area: worldstat;
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr 7fr;
-}
 .head {
   display: flex;
   justify-content: center;
