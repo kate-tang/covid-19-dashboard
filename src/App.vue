@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <StarBackground :key="starKey" />
     <Header class="header" />
     <DomesticStat class="domestic-stat" :class="{ 'mobile-hide': $store.state.mobileMenuTab !== 'domesticstat' }" />
     <WorldStat class="world-stat" :class="{ 'mobile-hide': $store.state.mobileMenuTab !== 'worldstat' }" />
@@ -12,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import Header from './components/Header.vue'
 import DomesticStat from './components/DomesticStat.vue'
 import WorldStat from './components/WorldStat.vue'
@@ -21,11 +22,19 @@ import Graph from './components/Graph/Graph.vue'
 import LastUpdated from './components/LastUpdated.vue'
 import AnimatedCursor from './components/AnimatedCursor.vue'
 import MobileMenu from './components/MobileMenu.vue'
+import StarBackground from './components/StarBackground.vue'
 
 export default defineComponent({
-  components: { Header, DomesticStat, WorldStat, Map, Graph, LastUpdated, AnimatedCursor, MobileMenu },
+  components: {
+    Header, DomesticStat, WorldStat, Map, Graph, LastUpdated, MobileMenu,
+    AnimatedCursor, StarBackground
+  },
   setup() {
-    // 
+    // reset StarBackground's width & height when resizing
+    let starKey = ref<number>(0)
+    window.addEventListener('resize', () => starKey.value++)
+
+    return { starKey }
   },
 })
 </script>
@@ -70,14 +79,10 @@ body {
       'header'
       'menu'
       'main';
-    // height: 100%;
-    // max-height: 100%;
-    // padding: 0 $block-gap;
   }
 }
 
-
-
+// Blocks
 .header {
   grid-area: header;
   display: flex;
@@ -142,17 +147,13 @@ body {
     }
   }
 }
-.map {
-  @media (max-width: 850px) {
-    z-index: 10;
-  }
-}
 .mobile-menu {
   grid-area: menu;
   display: none;
   color: #FFF;
   @media (max-width: 850px) {
     display: block;
+    z-index: 1;
   }
 }
 </style>
