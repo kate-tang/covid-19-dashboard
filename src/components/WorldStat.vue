@@ -93,6 +93,15 @@ export default defineComponent({
     font-size: 1vw;
     line-height: 1.4;
     text-align: center;
+    @media (max-width: 1600px) {
+      font-size: 16px;
+    }
+    @media (max-width: 1200px) {
+      padding: 10px 0;
+    }
+    @media (max-width: 850px) {
+      font-size: 18px;
+    }
     .divider {
       vertical-align: text-top;
     }
@@ -109,7 +118,7 @@ export default defineComponent({
   list-style-type: none;
   .stat-list-item {
     padding: 10px;
-    border-top: 1px solid $grey-2;
+    border-top: 1px solid #404040;
     .name {
       margin-bottom: 3px;
       font-size: 16px;
@@ -118,6 +127,43 @@ export default defineComponent({
     .val {
       font-size: 14px;
       line-height: 1.3;
+    }
+    @media (max-width: 850px) {
+      display: flex;
+      justify-content: center;
+      padding: 5px 0;
+      border-top: none;
+      &:nth-child(2n-1) {
+        background: rgba(46, 159, 235, .1);
+      }
+      &:hover {
+        background: rgba(46, 159, 235, .2);
+      }
+      .name {
+        flex: 0 0 25%;
+      }
+      .val {
+        flex: 0 0 35%;
+        text-align: right;
+      }
+    }
+    @media (max-width: 650px) {
+      .name {
+        flex: 0 0 30%;
+      }
+      .val {
+        flex: 0 0 40%;
+      }
+    }
+    @media (max-width: 500px) {
+      padding: 5px 10px;
+      .name {
+        flex: 0 0 35%;
+        font-size: 14px;
+      }
+      .val {
+        flex: 0 0 65%;
+      }
     }
   }
 }

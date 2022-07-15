@@ -5,7 +5,7 @@
     <WorldStat class="world-stat" :class="{ 'mobile-hide': $store.state.mobileMenuTab !== 'worldstat' }" />
     <Map class="map" :class="{ 'mobile-hide': $store.state.mobileMenuTab !== 'map' }" />
     <Graph class="graph" :class="{ 'mobile-hide': $store.state.mobileMenuTab !== 'graph' }" />
-    <LastUpdated class="last-updated" />
+    <LastUpdated class="last-updated" :class="{ 'mobile-hide': $store.state.mobileMenuTab !== 'domesticstat' }" />
     <AnimatedCursor />
     <MobileMenu />
   </div>
@@ -40,7 +40,7 @@ body {
 .container {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: $header-height 1fr 1fr 7fr;
+  grid-template-rows: var(--header-height) 1fr 1fr 7fr;
   gap: $block-gap;
   grid-template-areas: 
     'header header header header header header header'
@@ -55,7 +55,7 @@ body {
   font-family: 'Open Sans', sans-serif;
   @media (max-width: 1200px) {
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: $header-height 1fr 1fr 2fr 5fr;
+    grid-template-rows: var(--header-height) 1fr 1fr 2fr 5fr;
     grid-template-areas: 
       'header header header'
       'domesticstat domesticstat lastupdated'
@@ -65,7 +65,7 @@ body {
   }
   @media (max-width: 850px) {
     grid-template-columns: 1fr;
-    grid-template-rows: $header-height $mobile-menu-height 1fr;
+    grid-template-rows: var(--header-height) $mobile-menu-height 1fr;
     grid-template-areas: 
       'header'
       'menu'
@@ -83,8 +83,7 @@ body {
   display: flex;
   align-items: center;
   position: absolute;
-  height: $header-height;
-  padding: 0 20px;
+  height: var(--header-height);
   background: transparent;
   border: none;
   font-weight: 300;
@@ -125,10 +124,16 @@ body {
 .last-updated {
   grid-area: lastupdated;
   @media (max-width: 850px) {
-    display: none;
+    width: 100%;
+    height: $mobile-lastupdated-height;
+    &.block {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
   }
 }
-.domestic-stat, .world-stat, .map, .graph {
+.domestic-stat, .last-updated, .world-stat, .map, .graph {
   @media (max-width: 850px) {
     grid-area: main;
     &.mobile-hide {

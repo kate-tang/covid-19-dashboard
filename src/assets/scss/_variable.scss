@@ -1,12 +1,13 @@
-$block-gap: 10px;
-$header-height: 50px;
-$mobile-menu-height: 35px;
+:root {
+  --header-height: 50px;
+  @media (max-width: 850px) {
+    --header-height: 40px;
+  }
+}
 
-$grey-1: #555555;
-$grey-2: #404040;
-$grey-3: #353535;
-$grey-4: #2B2B2B;
-$grey-5: #262626;
+$block-gap: 10px;
+$mobile-menu-height: 35px;
+$mobile-lastupdated-height: 30px;
 
 $block-bg: rgba(17, 46, 90, 0.2);
 $border-color: #173869;

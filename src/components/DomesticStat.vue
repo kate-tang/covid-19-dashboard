@@ -110,6 +110,8 @@ export default defineComponent({
     &:nth-child(4) { justify-self: start; align-self: start; }
   }
   @media (max-width: 650px) {
+    position: relative;
+    top: $mobile-lastupdated-height;
     max-width: 100%;
     max-height: 100%;
     &:nth-child(1) { justify-self: stretch; align-self: stretch; }

@@ -283,6 +283,7 @@ export default defineComponent({
   border-right: 1px solid $border-color;
   border-bottom: 1px solid $border-color;
   font-size: 12px;
+  white-space: nowrap;
   cursor: pointer;
   & + & {
     margin-left: 5px;
@@ -290,12 +291,13 @@ export default defineComponent({
   &.active {
     background: lighten($block-bg, 15%);
     color: #FFF;
-    border-top: 1px solid #0E1928;
+    border-top: 1px solid #111F34;
   }
   @media (max-width: 1000px) {
     padding: 0 5px;
     & + & {
       margin-left: 0;
+      border-left: none;
     }
   }
   @media (max-width: 850px) {
@@ -305,16 +307,18 @@ export default defineComponent({
     font-size: 14px;
     & + & {
       margin-left: 5px;
+      border-left: 1px solid $border-color;
     }
     &.active {
       border-top: 1px solid $border-color;
-      border-bottom: 1px solid #0E1928;
+      border-bottom: 1px solid #111F34;
     }
   }
   @media (max-width: 500px) {
     font-size: 12px;
     & + & {
       margin-left: 0;
+      border-left: none;
     }
   }
 }
