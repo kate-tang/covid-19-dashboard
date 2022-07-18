@@ -35,7 +35,7 @@ interface Domestic {
   a32: string;
 }
 // api path: https://covid-19.nchc.org.tw/api/covid19?CK=covid-19@nchc.org.tw&querydata=5002
-interface County {
+interface CountyOrTown {
   id: string;
   a01: string;
   a02: string;
@@ -93,4 +93,4 @@ interface Global {
   TotalRecovered: number;
 }
 
-export { Domestic, County, DailyLog, World, Country, Global }
+export { Domestic, CountyOrTown, DailyLog, World, Country, Global }

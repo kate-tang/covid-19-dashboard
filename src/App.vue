@@ -32,7 +32,10 @@ export default defineComponent({
   setup() {
     // reset StarBackground's width & height when resizing
     let starKey = ref<number>(0)
-    window.addEventListener('resize', () => starKey.value++)
+    window.addEventListener('resize', () => {
+      if (window.innerWidth <= 500) return
+      starKey.value++
+    })
 
     return { starKey }
   },
