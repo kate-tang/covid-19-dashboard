@@ -1,24 +1,29 @@
 # covid-19-dashboard
+The dashboard provides up-to-date stats and info of COVID-19 in Taiwan using Vue 3.
 
 ## Project setup
 ```
+# Install dependencies
 npm install
-```
-
-### Compiles and hot-reloads for development
-```
+# Compiles and hot-reloads for development
 npm run serve
-```
-
-### Compiles and minifies for production
-```
+# Compiles and minifies for production
 npm run build
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
+## Tools and Technologies
+* Vue 3
+* TypeScript
+* CSS Grid
+* SCSS
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## Screenshots
+* Desktop
+![alt text](/screenshots/screenshot-desktop.jpg)
+* Tablet
+![alt text](/screenshots/screenshot-tablet.jpg)
+* Phone
+![alt text](/screenshots/screenshot-phone.jpg)
+
+## Demo
+You can view live demo [here](https://kate-tang.github.io/covid-19-dashboard/#/).
