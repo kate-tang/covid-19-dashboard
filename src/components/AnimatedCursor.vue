@@ -11,7 +11,7 @@ export default defineComponent({
     let left = ref<number>(30)
     let top = ref<number>(30)
     let showAnime = ref<boolean>(false)
-    let holdForAnime = ref<boolean>(false)
+    let holdForAnime = ref<boolean>(false) // toggle display block/none to reactivate animation
 
     document.addEventListener('mousedown', () => {
       showAnime.value = true

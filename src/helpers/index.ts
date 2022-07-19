@@ -1,14 +1,15 @@
-const fetchData = async (path: string): Promise<any[]> => {
+// js async fetch
+const fetchData = async (path: string): Promise<[undefined, unknown] | [unknown, undefined]> => {
   try {
     const res = await fetch(path)
     const data = await res.json()
     return [undefined, data]
   } catch (err) {
-    console.log(typeof err);
     return [err, undefined]
   }
 }
 
+// round to x decimal places
 // 123.456 -> 123.46
 // '123.456' -> '123.46'
 function round(num: string, place: number): string;
@@ -23,6 +24,7 @@ function round(num: unknown, place: number): unknown {
   }
 }
 
+// format number with commas
 // 31256 -> '31,256'
 // '31256' -> '31,256'
 function format(num: string): string;

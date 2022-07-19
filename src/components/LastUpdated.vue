@@ -42,7 +42,7 @@ export default defineComponent({
   .block-content {
     display: flex;
     flex-direction: row;
-    justify-content: end;
+    justify-content: flex-end;
     align-items: center;
     font-size: 14px;
   }

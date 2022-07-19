@@ -75,8 +75,6 @@ export default defineComponent({
       },
     }
 
-    const plugins: Plugin<'line'>[] = []
-
     return () =>
       h(Line, {
         chartData,

@@ -5,14 +5,6 @@
   </header>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-
-export default defineComponent({
-  
-})
-</script>
-
 <style lang="scss" scoped>
 .logo {
   width: calc(var(--header-height) - 10px);

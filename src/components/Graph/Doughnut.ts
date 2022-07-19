@@ -1,5 +1,5 @@
 import { defineComponent, h, PropType } from 'vue'
-import graphData from '@/helpers/graphData'
+import graphData from '@/data/graphData'
 
 import { Doughnut } from 'vue-chartjs'
 import {
@@ -83,7 +83,7 @@ export default defineComponent({
 
     const plugins: Plugin<'doughnut'>[] = [{
       id: 'doughnutLabelsLine',
-      afterDraw(chart, args, options){
+      afterDraw(chart){
         const { ctx, chartArea: { top, left, width, height } } = chart
         
         chart.data.datasets.forEach((dataset, i) => {
@@ -106,7 +106,6 @@ export default defineComponent({
             ctx.stroke()
 
             // text
-            const textWidth = ctx.measureText(chart.data.labels?.[index] as string).width + 5
             ctx.font = '12px Arial'
 
             // control the position
