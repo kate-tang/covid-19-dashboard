@@ -19,10 +19,15 @@ npm run build
 
 ## Screenshots
 * Desktop
+
 ![alt text](/screenshots/screenshot-desktop.jpg)
+
 * Tablet
+
 ![alt text](/screenshots/screenshot-tablet.jpg)
+
 * Phone
+
 ![alt text](/screenshots/screenshot-phone.jpg)
 
 ## Demo
