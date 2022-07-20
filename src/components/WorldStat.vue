@@ -32,8 +32,9 @@
 import { defineComponent, ref } from 'vue'
 import Loader from './Loader.vue'
 import getCountryName from '../helpers/countries'
-import { fetchData, format } from '../helpers'
+import { format } from '../helpers'
 import { World, Country } from '../interface/apiData'
+import { Fetch } from '../types'
 
 export default defineComponent({
   components: { Loader },
@@ -49,15 +50,15 @@ export default defineComponent({
     let countries = ref<DataType[]>()
 
     const getWorldData = async (): Promise<void> => {
-      const [error, rawData] = await fetchData('/covid19/summary')
+      const res = await fetch(`${process.env.VUE_APP_SERVER}/api/jhucsse?q=summary`)
+      const rawData: Fetch = await res.json()
       
-      if (error) {
-        console.log('error!!', error);
+      if (!rawData.success) {
+        console.log('error!!', rawData.message);
         return
       }
 
-      let raw = rawData as World
-      
+      const raw = rawData.results as World
       world.value = {
         name: "全球",
         totalCases: format(raw.Global.TotalConfirmed),

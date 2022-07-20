@@ -46,8 +46,8 @@ import { defineComponent, ref } from 'vue'
 import Loader from '../Loader.vue'
 import Line from './Line'
 import Doughnut from './Doughnut'
-import { fetchData } from '@/helpers'
 import { DailyLog } from '@/interface/apiData'
+import { Fetch } from '@/types'
 
 export default defineComponent({
   components: { Loader, Line, Doughnut },
@@ -103,14 +103,15 @@ export default defineComponent({
     let trendType = ref<NewOrTotal>('new')
     let trendKey = ref(0)
     const getTrendData = async (): Promise<void> => {
-      const [error, rawData] = await fetchData('/nchc/covid19?CK=covid-19@nchc.org.tw&querydata=4051')
+      const res = await fetch(`${process.env.VUE_APP_SERVER}/api/nchc?querydata=4051`)
+      const rawData: Fetch = await res.json()
       
-      if (error) {
-        console.log('error!!', error);
+      if (!rawData.success) {
+        console.log('error!!', rawData.message);
         return
       }
 
-      let raw = rawData as DailyLog[]
+      const raw = rawData.results as DailyLog[]
       let label: string[] = []
       let totalCases: number[] = []
       let newCases: number[] = []

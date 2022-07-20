@@ -1,14 +1,3 @@
-// js async fetch
-const fetchData = async (path: string): Promise<[undefined, unknown] | [unknown, undefined]> => {
-  try {
-    const res = await fetch(path)
-    const data = await res.json()
-    return [undefined, data]
-  } catch (err) {
-    return [err, undefined]
-  }
-}
-
 // round to x decimal places
 // 123.456 -> 123.46
 // '123.456' -> '123.46'
@@ -40,4 +29,4 @@ function format(num: unknown): unknown {
   }
 }
 
-export { fetchData, round, format }
+export { round, format }

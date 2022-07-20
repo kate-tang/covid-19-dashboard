@@ -38,8 +38,9 @@
 import { defineComponent, ref } from 'vue'
 import Loader from './Loader.vue'
 import store from '../store'
-import { fetchData, round, format } from '../helpers'
+import { round, format } from '../helpers'
 import { Domestic } from '../interface/apiData'
+import { Fetch } from '../types'
 
 export default defineComponent({
   components: { Loader },
@@ -54,16 +55,17 @@ export default defineComponent({
     let vacShot = ref<number | string>()
 
     const getDomesticData = async (): Promise<void> => {
-      const [error, rawData] = await fetchData('/nchc/covid19?CK=covid-19@nchc.org.tw&querydata=4001&limited=TWN')
+      const res = await fetch(`${process.env.VUE_APP_SERVER}/api/nchc?querydata=4001&limited=TWN`)
+      const rawData: Fetch = await res.json()
       
-      if (error) {
-        console.log('error!!', error);
+      if (!rawData.success) {
+        console.log('error!!', rawData.message);
         return
       }
 
       // rawData consists of Taiwan covid-19 data on daily basis from latest to earlier ones; however, some fields in the latest one might be vacant
       // check if the latest data is complete; if not, then use previous day's data
-      const raw = rawData as Domestic[]
+      const raw = rawData.results as Domestic[]
       const data = raw.find((item: Domestic) => {
         let fields: (keyof Domestic)[] = ['a04', 'a05', 'a06', 'a08', 'a09', 'a20', 'a21', 'a27']
         return fields.every((field): boolean => parseInt(item[field]) !== 0)

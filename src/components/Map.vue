@@ -1,7 +1,7 @@
 <template>
   <section class="block">
-    <Loader v-if="!showBlock" />
-    <div v-else class="block-content">
+    <Loader v-show="!showBlock" />
+    <div v-show="showBlock" class="block-content">
       <transition name="slide">
         <div class="info block block-themed" v-if="activeArea.length > 0">
           <div class="location">{{ activeArea[0] }}{{ activeArea[1] === '全區' ? '' : activeArea[1] }}</div>
@@ -1977,8 +1977,9 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue'
 import Loader from './Loader.vue'
-import { fetchData, format } from '../helpers'
+import { format } from '../helpers'
 import { CountyOrTown } from '../interface/apiData'
+import { Fetch } from '../types'
 
 export default defineComponent({
   components: { Loader },
@@ -1989,14 +1990,15 @@ export default defineComponent({
 
     let data = ref<Record<string, Record<string, string>>>({})
     const getData = async (): Promise<void> => {
-      const [error, rawData] = await fetchData('/nchc/covid19?CK=covid-19@nchc.org.tw&querydata=5002')
+      const res = await fetch(`${process.env.VUE_APP_SERVER}/api/nchc?querydata=5002`)
+      const rawData: Fetch = await res.json()
       
-      if (error) {
-        console.log('error!!', error);
+      if (!rawData.success) {
+        console.log('error!!', rawData.message);
         return
       }
 
-      const raw = rawData as CountyOrTown[]
+      const raw = rawData.results as CountyOrTown[]
       let date = '', currentCounty = ''
       raw.find((county, index) => {
         // if index === 0, then initiate date
@@ -2031,6 +2033,8 @@ export default defineComponent({
     let disableClick = false
     let previousTouch: Touch
     function beforeDrag(e: MouseEvent | TouchEvent): void {
+      if (!window.TouchEvent) return
+
       if (e instanceof TouchEvent){
         previousTouch = e.touches[0]
       }
@@ -2038,6 +2042,7 @@ export default defineComponent({
       mapMoving = true
     }
     function isDragging(e: MouseEvent | TouchEvent): void {
+      if (!window.TouchEvent) return
       if (!mapMoving) return
 
       // get viewBox
@@ -2212,6 +2217,8 @@ export default defineComponent({
 <style lang="scss" scoped>
 .info {
   position: absolute;
+  top: 0;
+  left: 0;
   width: 200px;
   padding: 10px;
   .location {
