@@ -1,7 +1,7 @@
 <template>
   <section class="block">
-    <Loader v-show="!showBlock" />
-    <div v-show="showBlock" class="block-content">
+    <Loader v-show="!isBlockMounted || !isDataLoaded" />
+    <div v-show="isBlockMounted && isDataLoaded" class="block-content">
       <transition name="slide">
         <div class="info block block-themed" v-if="activeArea.length > 0">
           <div class="location">{{ activeArea[0] }}{{ activeArea[1] === '全區' ? '' : activeArea[1] }}</div>
@@ -10,7 +10,7 @@
         </div>
       </transition>
       <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" :viewBox="`0 0 1440 2055`" class="taiwan" id="taiwan" @click.self="clearActiveArea"
-      @mousedown="beforeDrag" @mousemove="isDragging" @mouseup="afterDrag" @mouseout="afterDrag" @touchstart="beforeDrag" @touchmove="isDragging" @touchend="afterDrag" @wheel="zoom">
+      @mousedown="beforeDrag" @mousemove="isDragging" @mouseup="afterDrag" @mouseout="afterDrag" @touchstart="touchstart" @touchmove="touchmove" @touchend="touchend" @wheel="zoom">
         <g id="box" fill="none" stroke="#CCC" stroke-width="5">
           <path d="M 100.5 760.9435 100.5 491.7643 349.2545 491.7643 349.2545 760.9435 100.5 760.9435 Z"/>
           <path d="M 300.6267 424.653 300.6267 114.206 673.2419 114.206 673.2419 424.653 300.6267 424.653 Z"/>
@@ -1984,7 +1984,8 @@ import { Fetch } from '../types'
 export default defineComponent({
   components: { Loader },
   setup(){
-    let showBlock = ref<boolean>(false)
+    let isBlockMounted = ref<boolean>(false)
+    let isDataLoaded = ref<boolean>(false)
     let activeArea = ref<string[]>([])  // [county, town/whole county, id]
     let showTown = ref<boolean>(false)
 
@@ -2025,8 +2026,33 @@ export default defineComponent({
           }
         }
       })
+
+      setTimeout(() => isDataLoaded.value = true, 0)
     }
     getData()
+
+    // detect number of fingers when touching the screen
+    // 1 finger -> provide drag feature
+    // 2 fingers -> provide zoom feature
+    let initFingerPos: TouchList
+    function touchstart(e: TouchEvent): void {
+      if (e.touches.length === 1) {
+        beforeDrag(e)
+      } else if (e.touches.length === 2) {
+        initFingerPos = e.touches
+      }
+    }
+    function touchmove(e: TouchEvent): void {
+      if (e.touches.length === 1) {
+        isDragging(e)
+      } else if (e.touches.length === 2) {
+        zoom(e)
+      }
+    }
+    function touchend(e: TouchEvent): void {
+      mapMoving = false
+      disableClick = false
+    }
 
     // map dragging
     let mapMoving = false
@@ -2096,31 +2122,56 @@ export default defineComponent({
     }
 
     // map zooming
-    function zoom(e: WheelEvent){
+    function zoom(e: WheelEvent | TouchEvent){
       // get viewBox
       const el = e.currentTarget as SVGSVGElement
       let attr = el.getAttribute('viewBox') as string
       let startViewBox: number[] = attr.split(' ').map( n => parseFloat(n))
 
       // cancel zooming when zoom in/out too much
-      if (startViewBox[2] > 2500 && e.deltaY > 0 || startViewBox[2] < 150 && e.deltaY < 0) return
+      let touchOffset = 0
+      if (e instanceof TouchEvent){
+        const prevousArea = Math.abs(initFingerPos[0].clientX - initFingerPos[1].clientX) * Math.abs(initFingerPos[0].clientY - initFingerPos[1].clientY)
+        const currentArea = Math.abs(e.touches[0].clientX - e.touches[1].clientX) * Math.abs(e.touches[0].clientY - e.touches[1].clientY)
+        touchOffset = currentArea - prevousArea
+
+        if (startViewBox[2] > 2500 && touchOffset < 0 || startViewBox[2] < 150 && touchOffset > 0) return
+      } else {
+        if (startViewBox[2] > 2500 && e.deltaY > 0 || startViewBox[2] < 150 && e.deltaY < 0) return
+      }
 
       // convert start client point to svg point
       let startClientPoint = el.createSVGPoint()
       let CTM = el.getScreenCTM()
-      startClientPoint.x = e.clientX
-      startClientPoint.y = e.clientY
+      if (e instanceof TouchEvent){
+        startClientPoint.x = (e.touches[0].clientX + e.touches[1].clientX) / 2
+        startClientPoint.y = (e.touches[0].clientY + e.touches[1].clientY) / 2
+      } else {
+        startClientPoint.x = e.clientX
+        startClientPoint.y = e.clientY
+      }
       let startSVGPoint = startClientPoint.matrixTransform(CTM?.inverse())
 
       // set zoom ratio
-      let r 
-      if (e.deltaY > 0) {
-        r = 1.1
-      } else if (e.deltaY < 0) {
-        r = 0.9
+      let r
+      if (e instanceof TouchEvent){
+        if (touchOffset < 50) {
+          r = 1.01
+        } else if (touchOffset > 50) {
+          r = 0.99
+        } else {
+          r = 1
+        }
       } else {
-        r = 1
+        if (e.deltaY > 0) {
+          r = 1.1
+        } else if (e.deltaY < 0) {
+          r = 0.9
+        } else {
+          r = 1
+        }
       }
+      
 
       // apply zoom ratio
       el.setAttribute('viewBox', `${startViewBox[0]} ${startViewBox[1]} ${startViewBox[2] * r} ${startViewBox[3] * r}`)
@@ -2141,8 +2192,14 @@ export default defineComponent({
       let moveBackViewBox = `${middleViewBox[0] + delta.dx} ${middleViewBox[1] + delta.dy} ${middleViewBox[2]} ${middleViewBox[3]}` 
       el.setAttribute('viewBox', moveBackViewBox)
 
+      if (e instanceof TouchEvent){
+        initFingerPos = e.touches
+      }
+
       switchCountyAndTown(middleViewBox[2])
     }
+
+    // show town svg if map has been zoomed in large enough
     function switchCountyAndTown(width: number){
       if (width < 600){
         showTown.value = true
@@ -2151,6 +2208,7 @@ export default defineComponent({
       }
     }
 
+    // clear current active area (will remove color from map and close info box at top left corner)
     function clearActiveArea(){
       if (activeArea.value.length === 0) return
 
@@ -2203,12 +2261,13 @@ export default defineComponent({
         })
       }
 
-      setTimeout(() => showBlock.value = true, 500)
+      setTimeout(() => isBlockMounted.value = true, 0)
     })
 
     return {
-      showBlock, activeArea, showTown, data, clearActiveArea,
+      isBlockMounted, isDataLoaded, activeArea, showTown, data, clearActiveArea,
       beforeDrag, isDragging, afterDrag, zoom,
+      touchstart, touchmove, touchend
     }
   }
 })

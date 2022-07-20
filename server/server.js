@@ -56,6 +56,7 @@ const getJHUCSSEData = async (req, res) => {
   }
 }
 
+app.get('/', (req, res) => res.send('home!'))
 app.get('/api/nchc', getNCHCData)
 app.get('/api/jhucsse', getJHUCSSEData)
 
