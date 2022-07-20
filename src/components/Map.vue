@@ -2049,14 +2049,13 @@ export default defineComponent({
         zoom(e)
       }
     }
-    function touchend(e: TouchEvent): void {
-      mapMoving = false
-      disableClick = false
+    function touchend(): void {
+      afterDrag()
     }
 
     // map dragging
-    let mapMoving = false
-    let disableClick = false
+    let mapMoving = false   // interrupt dragging if mouse pos is outside the block
+    let disableClick = false  // ensure not to trigger county/town mouseup event while dragging the map
     let previousTouch: Touch
     function beforeDrag(e: MouseEvent | TouchEvent): void {
       if (!window.TouchEvent) return
