@@ -18,7 +18,7 @@ export default defineComponent({
   setup() {
     const store = useStore()
 
-    function switchBlock(block: Block){
+    function switchBlock(block: Block): void {
       store.commit('setMobileMenuTab', block)
     }
 

@@ -64,7 +64,7 @@ body {
   max-height: calc(100% - ($block-gap * 2));
   padding: $block-gap;
   background-image: linear-gradient(#0D1118, #111821);
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Open Sans', 'Noto Sans TC', sans-serif;
   @media (max-width: 1200px) {
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: var(--header-height) 1fr 1fr 2fr 5fr;

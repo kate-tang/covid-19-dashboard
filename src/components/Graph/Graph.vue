@@ -59,7 +59,7 @@ export default defineComponent({
     // set graph width & height
     let width = ref<number>()
     let height = ref<number>()
-    function setGraphSize(){
+    function setGraphSize(): void {
       if (window.innerWidth > 850){
         width.value = window.innerWidth / 4
         height.value = window.innerHeight / 5
