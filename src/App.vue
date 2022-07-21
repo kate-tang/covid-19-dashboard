@@ -43,8 +43,11 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-body {
+html, body {
   height: 100vh;
+  &.map-dragging {
+    overscroll-behavior-y: contain;  // disable browser's pull-to-refresh feature
+  }
 }
 #app {
   height: 100%;
@@ -125,6 +128,9 @@ body {
   grid-area: map;
   background: transparent;
   border: none;
+  &.map-dragging {
+    overscroll-behavior-y: contain;
+  }
 }
 .graph {
   grid-area: graph;

@@ -9,6 +9,10 @@
           <button class="close" @click="clearActiveArea"></button>
         </div>
       </transition>
+      <div class="magnifier">
+        <button class="plus" type="button" @click="zoom(undefined, 0.9)"></button>
+        <button class="minus" type="button" @click="zoom(undefined, 1.1)"></button>
+      </div>
       <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" :viewBox="`0 0 1440 2055`" class="taiwan" id="taiwan" @click.self="clearActiveArea"
       @mousedown="beforeDrag" @mousemove="isDragging" @mouseup="afterDrag" @mouseout="afterDrag" @touchstart="touchstart" @touchmove="touchmove" @touchend="touchend" @wheel="zoom">
         <g id="box" fill="none" stroke="#CCC" stroke-width="5">
@@ -2037,6 +2041,9 @@ export default defineComponent({
     let initFingerPos: TouchList
     function touchstart(e: TouchEvent): void {
       if (e.touches.length === 1) {
+        // disable browser's pull-to-refresh feature
+        document.body.classList.add('map-dragging')
+        
         beforeDrag(e)
       } else if (e.touches.length === 2) {
         initFingerPos = e.touches
@@ -2050,6 +2057,9 @@ export default defineComponent({
       }
     }
     function touchend(): void {
+      // enable browser's pull-to-refresh feature
+      document.body.classList.remove('map-dragging')
+
       afterDrag()
     }
 
@@ -2121,9 +2131,18 @@ export default defineComponent({
     }
 
     // map zooming
-    function zoom(e: WheelEvent | TouchEvent){
+    // will be triggered when using:
+    //   1. pinch-to-zoom (1 param)
+    //   2. mouse wheel (1 param)
+    //   3. magnifier btns (2 params)
+    function zoom(e: TouchEvent | WheelEvent | undefined, clickSvgRatio = 1): void {
       // get viewBox
-      const el = e.currentTarget as SVGSVGElement
+      let el
+      if (e instanceof TouchEvent || e instanceof WheelEvent){
+        el = e.currentTarget as SVGSVGElement
+      } else {
+        el = document.querySelector('#taiwan') as SVGSVGElement
+      }
       let attr = el.getAttribute('viewBox') as string
       let startViewBox: number[] = attr.split(' ').map( n => parseFloat(n))
 
@@ -2135,8 +2154,10 @@ export default defineComponent({
         touchOffset = currentArea - prevousArea
 
         if (startViewBox[2] > 2500 && touchOffset < 0 || startViewBox[2] < 150 && touchOffset > 0) return
-      } else {
+      } else if (e instanceof WheelEvent) {
         if (startViewBox[2] > 2500 && e.deltaY > 0 || startViewBox[2] < 150 && e.deltaY < 0) return
+      } else {
+        if (startViewBox[2] > 2500 && clickSvgRatio > 1 || startViewBox[2] < 150 && clickSvgRatio < 1) return
       }
 
       // convert start client point to svg point
@@ -2145,23 +2166,27 @@ export default defineComponent({
       if (e instanceof TouchEvent){
         startClientPoint.x = (e.touches[0].clientX + e.touches[1].clientX) / 2
         startClientPoint.y = (e.touches[0].clientY + e.touches[1].clientY) / 2
-      } else {
+      } else if (e instanceof WheelEvent) {
         startClientPoint.x = e.clientX
         startClientPoint.y = e.clientY
+      } else {
+        const coord = el.getBoundingClientRect()
+        startClientPoint.x = coord.x + (coord.width / 2)
+        startClientPoint.y = coord.y + (coord.height / 2)
       }
       let startSVGPoint = startClientPoint.matrixTransform(CTM?.inverse())
 
-      // set zoom ratio
+      // set zoom svg ratio
       let r
       if (e instanceof TouchEvent){
-        if (touchOffset < 50) {
+        if (touchOffset < 0) {
           r = 1.01
-        } else if (touchOffset > 50) {
+        } else if (touchOffset > 0) {
           r = 0.99
         } else {
           r = 1
         }
-      } else {
+      } else if (e instanceof WheelEvent) {
         if (e.deltaY > 0) {
           r = 1.1
         } else if (e.deltaY < 0) {
@@ -2169,6 +2194,8 @@ export default defineComponent({
         } else {
           r = 1
         }
+      } else {
+        r = clickSvgRatio
       }
       
 
@@ -2199,7 +2226,7 @@ export default defineComponent({
     }
 
     // show town svg if map has been zoomed in large enough
-    function switchCountyAndTown(width: number){
+    function switchCountyAndTown(width: number): void {
       if (width < 600){
         showTown.value = true
       } else {
@@ -2208,7 +2235,7 @@ export default defineComponent({
     }
 
     // clear current active area (will remove color from map and close info box at top left corner)
-    function clearActiveArea(){
+    function clearActiveArea(): void {
       if (activeArea.value.length === 0) return
 
       const activeAreaId = activeArea.value[2]
@@ -2224,7 +2251,7 @@ export default defineComponent({
       counties.forEach(county => {
         county.addEventListener('mouseup', (e) => clickOnCounty(e, county))
       })
-      function clickOnCounty(e: Event, county: SVGPathElement){
+      function clickOnCounty(e: Event, county: SVGPathElement): void {
         if (showTown.value || disableClick) return
         const countyName: string = county.querySelector('title')?.textContent?.trim().split(' ')[0] ?? ''
         const countyId = county.id
@@ -2237,7 +2264,7 @@ export default defineComponent({
       towns.forEach(town => {
         town.addEventListener('mouseup', (e) => clickOnTown(e, town))
       })
-      function clickOnTown(e: Event, town: SVGPathElement){
+      function clickOnTown(e: Event, town: SVGPathElement): void {
         if (!showTown.value || disableClick) return
 
         const townName: string = town.querySelector('title')?.textContent?.trim().split(' ')[0] ?? ''
@@ -2249,7 +2276,7 @@ export default defineComponent({
         fillAreaWithColor(townId)
       }
 
-      function fillAreaWithColor(id: string){
+      function fillAreaWithColor(id: string): void {
         [...counties, ...towns].forEach(area => {
           if (area.id === id){
             const color = id.length === 6 ? '#D3CEDF' : '#9C7E9E'
@@ -2318,6 +2345,45 @@ export default defineComponent({
 }
 .slide-enter-active, .slide-leave-active {
   transition: all .5s;
+}
+
+$magnifier-size: 30px;
+.magnifier {
+  position: absolute;
+  right: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: $magnifier-size;
+  height: $magnifier-size * 2 + 5px;
+  box-sizing: border-box;
+  .plus, .minus {
+    all: unset;
+    position: relative;
+    flex: 0 0 $magnifier-size;
+    background: #FFF;
+    border-radius: 50%;
+    cursor: pointer;
+    box-sizing: border-box;
+    &:hover, &:active {
+      background: #CCC;
+    }
+  }
+  .plus::before, .plus::after, .minus::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    width: $magnifier-size * .4;
+    height: 2px;
+    margin: 0 auto;
+    background: #000;
+  }
+  .plus::before {
+    transform: rotate(90deg);
+  }
 }
 
 .taiwan {
