@@ -66,7 +66,7 @@ export default defineComponent({
       }
       countries.value = processCountyData(raw.Countries)
 
-      setTimeout(() => showBlock.value = true, 500)
+      setTimeout(() => showBlock.value = true, 0)
     }
     function processCountyData(countries: Country[]): DataType[] {
       return countries.sort((a, b) => b.TotalConfirmed - a.TotalConfirmed).map(country => ({

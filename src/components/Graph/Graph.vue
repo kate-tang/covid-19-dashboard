@@ -123,7 +123,7 @@ export default defineComponent({
 
       trendData.value = { label, total: totalCases, new: newCases }
       trendKey.value++
-      setTimeout(() => showGraph.value.trend = true, 500)
+      setTimeout(() => showGraph.value.trend = true, 0)
     }
     getTrendData()
     const switchTrendType = (type: NewOrTotal): void => {
@@ -160,7 +160,7 @@ export default defineComponent({
       gender: false,
     })
     const show = (topic: 'age' | 'gender'): void => {
-      setTimeout(() => showGraph.value[topic] = true, 500)
+      setTimeout(() => showGraph.value[topic] = true, 0)
     }
 
     return {

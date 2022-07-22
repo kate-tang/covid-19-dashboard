@@ -83,7 +83,7 @@ export default defineComponent({
 
       store.commit('setUpdateTime', new Date(data['a04']).getTime())
 
-      setTimeout(() => showBlock.value = true, 500)
+      setTimeout(() => showBlock.value = true, 0)
     }
     getDomesticData()
 
