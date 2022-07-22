@@ -24,9 +24,17 @@ const getNCHCData = async (req, res) => {
     const raw = await fetch(url)
     const data = await raw.json()
 
+    // for some specific apis, only send data that is up-to-date
+    let trimmedData
+    if (querydata === '4001'){
+      trimmedData = data.slice(0, 10)
+    } else if (querydata === '5002'){
+      trimmedData = data.slice(0, 800)
+    }
+
     res.json({
       success: true,
-      results: data,
+      results: trimmedData || data,
     })
   } catch (error) {
     console.log(error);
@@ -60,4 +68,4 @@ app.get('/', (req, res) => res.send('home!'))
 app.get('/api/nchc', getNCHCData)
 app.get('/api/jhucsse', getJHUCSSEData)
 
-app.listen(3000)
+app.listen(process.env.PORT || 3000)
